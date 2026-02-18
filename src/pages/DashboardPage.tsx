@@ -140,6 +140,7 @@ export default function DashboardPage() {
                     <h3 className="text-xs uppercase tracking-widest text-emerald-400 font-semibold mb-3">Weekly Goals</h3>
                     {goals.filter(g => g.horizon === "weekly").map((goal) => (
                       <div key={goal.id} className="py-2.5 border-b border-emerald-900/20 last:border-0">
+                        <span className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground/70">{goal.category}</span>
                         <p className="text-lg font-bold text-foreground leading-tight">{goal.title}</p>
                         {goal.reason && <p className="text-sm text-muted-foreground mt-1">{goal.reason}</p>}
                       </div>
@@ -153,6 +154,7 @@ export default function DashboardPage() {
                     <h3 className="text-xs uppercase tracking-widest text-amber-400 font-semibold mb-3">Monthly Goals</h3>
                     {goals.filter(g => g.horizon === "monthly").map((goal) => (
                       <div key={goal.id} className="py-2.5 border-b border-amber-900/20 last:border-0">
+                        <span className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground/70">{goal.category}</span>
                         <p className="text-lg font-bold text-foreground leading-tight">{goal.title}</p>
                         {goal.reason && <p className="text-sm text-muted-foreground mt-1">{goal.reason}</p>}
                       </div>
@@ -166,6 +168,7 @@ export default function DashboardPage() {
                     <h3 className="text-xs uppercase tracking-widest text-sky-400 font-semibold mb-3">Yearly Goals</h3>
                     {goals.filter(g => g.horizon === "yearly").map((goal) => (
                       <div key={goal.id} className="py-2.5 border-b border-sky-900/20 last:border-0">
+                        <span className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground/70">{goal.category}</span>
                         <p className="text-lg font-bold text-foreground leading-tight">{goal.title}</p>
                         {goal.reason && <p className="text-sm text-muted-foreground mt-1">{goal.reason}</p>}
                       </div>
