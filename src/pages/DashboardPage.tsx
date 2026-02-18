@@ -92,31 +92,24 @@ export default function DashboardPage() {
       <div className="p-6">
 
         {/* ── Hero ─────────────────────────────────────────────────────── */}
-        <div className="mb-12">
+        <div className="mb-6">
           <p className="text-sm text-muted-foreground mb-2 font-mono tracking-wide">
             {new Date().toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })}
           </p>
-          <h1 className="text-5xl font-bold text-foreground leading-tight mb-8">
+          <h1 className="text-5xl font-bold text-foreground leading-tight mb-3">
             Good {greeting}, Thomas.
           </h1>
-
-          {/* Slogan */}
-          <div className="py-6">
-            <p className="text-5xl font-bold text-foreground tracking-tight leading-tight">
-              Grim. <br /> Honor will come.
-            </p>
-            <p className="text-lg text-muted-foreground mt-4 max-w-2xl leading-relaxed">
-              Every rep counts. Every hour matters. Show up.
-            </p>
-          </div>
+          <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
+            Honor will come. Every rep counts. Every hour matters. Show up.
+          </p>
         </div>
 
         {/* ── Content ──────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-3 gap-12">
+        <div className="grid grid-cols-3 gap-10 items-start max-w-6xl mx-auto">
 
-          {/* Left: Goals Only (No "Needs Attention") */}
+          {/* Left: Goals grouped by horizon */}
           <div className="col-span-2">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
                 <Target className="w-6 h-6 text-foreground" />
                 <h2 className="text-2xl font-bold text-foreground">Goals</h2>
@@ -140,18 +133,45 @@ export default function DashboardPage() {
                 </button>
               </div>
             ) : (
-              <div className="space-y-6">
-                {goals.slice(0, 6).map((goal) => (
-                  <div key={goal.id} className="py-4 border-b border-border/50 last:border-0">
-                    <p className="text-xl font-bold text-foreground leading-tight">{goal.title}</p>
-                    {goal.reason && (
-                      <p className="text-base text-muted-foreground mt-1.5 leading-relaxed">{goal.reason}</p>
-                    )}
-                    <span className="text-xs text-muted-foreground/60 uppercase tracking-widest mt-2 block font-semibold">
-                      {goal.horizon}
-                    </span>
+              <div className="space-y-4">
+                {/* Weekly Goals */}
+                {goals.filter(g => g.horizon === "weekly").length > 0 && (
+                  <div className="rounded-2xl p-5 bg-emerald-950/30 border border-emerald-900/30">
+                    <h3 className="text-xs uppercase tracking-widest text-emerald-400 font-semibold mb-3">Weekly Goals</h3>
+                    {goals.filter(g => g.horizon === "weekly").map((goal) => (
+                      <div key={goal.id} className="py-2.5 border-b border-emerald-900/20 last:border-0">
+                        <p className="text-lg font-bold text-foreground leading-tight">{goal.title}</p>
+                        {goal.reason && <p className="text-sm text-muted-foreground mt-1">{goal.reason}</p>}
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
+
+                {/* Monthly Goals */}
+                {goals.filter(g => g.horizon === "monthly").length > 0 && (
+                  <div className="rounded-2xl p-5 bg-amber-950/25 border border-amber-900/30">
+                    <h3 className="text-xs uppercase tracking-widest text-amber-400 font-semibold mb-3">Monthly Goals</h3>
+                    {goals.filter(g => g.horizon === "monthly").map((goal) => (
+                      <div key={goal.id} className="py-2.5 border-b border-amber-900/20 last:border-0">
+                        <p className="text-lg font-bold text-foreground leading-tight">{goal.title}</p>
+                        {goal.reason && <p className="text-sm text-muted-foreground mt-1">{goal.reason}</p>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Yearly Goals */}
+                {goals.filter(g => g.horizon === "yearly").length > 0 && (
+                  <div className="rounded-2xl p-5 bg-sky-950/25 border border-sky-900/30">
+                    <h3 className="text-xs uppercase tracking-widest text-sky-400 font-semibold mb-3">Yearly Goals</h3>
+                    {goals.filter(g => g.horizon === "yearly").map((goal) => (
+                      <div key={goal.id} className="py-2.5 border-b border-sky-900/20 last:border-0">
+                        <p className="text-lg font-bold text-foreground leading-tight">{goal.title}</p>
+                        {goal.reason && <p className="text-sm text-muted-foreground mt-1">{goal.reason}</p>}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
