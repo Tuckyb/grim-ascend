@@ -2,63 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 220 14% 6%;
-    --foreground: 0 0% 93%;
+    /* Backgrounds — deep warm charcoal, pure black essentially */
+    --background: 0 0% 5%;
+    --foreground: 40 20% 94%;
+    /* CREAMY OFF-WHITE */
 
-    --card: 220 13% 9%;
-    --card-foreground: 0 0% 93%;
+    --card: 0 0% 8%;
+    --card-foreground: 40 20% 94%;
 
-    --popover: 220 13% 9%;
-    --popover-foreground: 0 0% 93%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 40 20% 94%;
 
-    --primary: 152 60% 48%;
-    --primary-foreground: 220 14% 6%;
+    /* Primary — Muted Sage Green RESTORED */
+    --primary: 150 28% 42%;
+    --primary-foreground: 0 0% 5%;
 
-    --secondary: 220 12% 14%;
-    --secondary-foreground: 0 0% 80%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 40 10% 80%;
 
-    --muted: 220 10% 16%;
-    --muted-foreground: 220 8% 50%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 40 5% 60%;
 
-    --accent: 152 60% 48%;
-    --accent-foreground: 220 14% 6%;
+    --accent: 150 28% 42%;
+    --accent-foreground: 0 0% 5%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 60% 48%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 10% 16%;
-    --input: 220 10% 16%;
-    --ring: 152 60% 48%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 150 28% 42%;
 
-    --radius: 0.5rem;
-
-    --sidebar-background: 220 14% 4%;
-    --sidebar-foreground: 0 0% 70%;
-    --sidebar-primary: 152 60% 48%;
-    --sidebar-primary-foreground: 220 14% 6%;
-    --sidebar-accent: 220 12% 12%;
-    --sidebar-accent-foreground: 0 0% 93%;
-    --sidebar-border: 220 10% 12%;
-    --sidebar-ring: 152 60% 48%;
+    /* Apple-style: generous border radius */
+    --radius: 0.875rem;
 
     /* GRIM custom tokens */
-    --grim-emerald: 152 60% 48%;
-    --grim-emerald-dim: 152 40% 30%;
-    --grim-gold: 45 90% 55%;
-    --grim-surface: 220 13% 11%;
-    --grim-surface-hover: 220 12% 14%;
-    --grim-gradient-start: 152 60% 48%;
-    --grim-gradient-end: 160 70% 36%;
-    --grim-text-dim: 220 8% 40%;
+    --grim-sage: 150 28% 42%;
+    --grim-amber: 38 52% 50%;
+    --grim-cream: 40 20% 94%;
+    /* Explicit cream token */
   }
 
   .dark {
-    --background: 220 14% 6%;
-    --foreground: 0 0% 93%;
+    --background: 0 0% 5%;
+    --foreground: 40 20% 94%;
   }
 }
 
@@ -68,8 +59,23 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    letter-spacing: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    color: hsl(38 22% 84%);
   }
 
   .font-mono {
@@ -79,40 +85,59 @@
 
 @layer utilities {
   .grim-gradient {
-    background: linear-gradient(135deg, hsl(var(--grim-gradient-start)), hsl(var(--grim-gradient-end)));
+    background: linear-gradient(135deg, hsl(var(--grim-sage)), hsl(160 35% 30%));
   }
 
+  /* Restored gradient text for variety, but can be plain if needed. Let's keep it subtle sage. */
   .grim-gradient-text {
-    background: linear-gradient(135deg, hsl(var(--grim-gradient-start)), hsl(var(--grim-gradient-end)));
+    background: linear-gradient(135deg, hsl(var(--grim-sage)), hsl(var(--grim-amber)));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .grim-glow {
-    box-shadow: 0 0 20px hsl(var(--grim-emerald) / 0.15), 0 0 60px hsl(var(--grim-emerald) / 0.05);
-  }
-
   .grim-card {
-    @apply bg-card border border-border rounded-lg transition-all duration-200;
+    @apply bg-card border border-border rounded-2xl transition-all duration-200;
   }
 
   .grim-card:hover {
-    border-color: hsl(var(--grim-emerald) / 0.3);
-    box-shadow: 0 4px 20px hsl(var(--grim-emerald) / 0.08);
+    border-color: hsl(var(--grim-sage) / 0.3);
   }
 
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: hsl(var(--muted)) transparent;
+  /* Time block strips for daily planner - COLOR CODED RESTORED */
+  .time-block {
+    @apply rounded-xl border transition-all duration-200;
+    min-height: 88px;
   }
 
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 4px;
+  .time-block-deep-work {
+    background: hsl(150 28% 42% / 0.1);
+    border-color: hsl(150 28% 42% / 0.25);
+    color: hsl(150 35% 60%);
+    /* Brighter sage text */
   }
 
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted));
-    border-radius: 2px;
+  .time-block-meeting {
+    background: hsl(210 60% 50% / 0.1);
+    border-color: hsl(210 60% 50% / 0.25);
+    color: hsl(210 70% 70%);
+  }
+
+  .time-block-break {
+    background: hsl(38 52% 50% / 0.1);
+    border-color: hsl(38 52% 50% / 0.25);
+    color: hsl(38 60% 60%);
+  }
+
+  .time-block-admin {
+    background: hsl(0 0% 20% / 0.4);
+    border-color: hsl(0 0% 30%);
+    color: hsl(0 0% 70%);
+  }
+
+  .time-block-personal {
+    background: hsl(340 60% 55% / 0.1);
+    border-color: hsl(340 60% 55% / 0.25);
+    color: hsl(340 70% 70%);
   }
 }

@@ -39,6 +39,7 @@ export interface Goal {
   horizon: "yearly" | "monthly" | "weekly";
   category: TaskCategory;
   progress: number;
+  reason?: string;
 }
 
 export const initialTasks: Task[] = [
@@ -137,22 +138,16 @@ export const dailySchedule: Record<string, DailyBlock[]> = {
 
 export const goals: Goal[] = [
   { id: "g1", title: "Scale Member Automations to 1000 users", horizon: "yearly", category: "professional", progress: 35 },
-  { id: "g2", title: "Launch THE GRIM Podcast (50 episodes)", horizon: "yearly", category: "professional", progress: 24 },
-  { id: "g3", title: "Achieve < 5% monthly churn rate", horizon: "yearly", category: "professional", progress: 60 },
-  { id: "g4", title: "Complete GRIM Week event", horizon: "yearly", category: "professional", progress: 15 },
   { id: "g5", title: "Establish daily deep work habit", horizon: "yearly", category: "private", progress: 72 },
   { id: "g6", title: "Close 3 new affiliate partnerships", horizon: "monthly", category: "professional", progress: 33 },
-  { id: "g7", title: "Ship customer health score feature", horizon: "monthly", category: "professional", progress: 55 },
-  { id: "g8", title: "Record 4 podcast episodes", horizon: "monthly", category: "professional", progress: 25 },
   { id: "g9", title: "Complete sprint backlog (12 tasks)", horizon: "weekly", category: "professional", progress: 42 },
   { id: "g10", title: "5 deep work sessions", horizon: "weekly", category: "private", progress: 60 },
-  { id: "g11", title: "Morning & evening habit streak", horizon: "weekly", category: "private", progress: 85 },
 ];
 
-export const columnConfig: Record<KanbanColumn, { title: string; color: string }> = {
-  backlog: { title: "Backlog", color: "var(--muted-foreground)" },
-  sprint: { title: "Sprint", color: "hsl(var(--grim-gold))" },
-  "in-progress": { title: "In Progress", color: "hsl(var(--grim-emerald))" },
-  review: { title: "Review", color: "hsl(210, 80%, 60%)" },
-  done: { title: "Done", color: "hsl(var(--grim-emerald-dim))" },
+export const columnConfig: Record<KanbanColumn, { title: string; color: string; bg: string }> = {
+  backlog: { title: "Backlog", color: "var(--muted-foreground)", bg: "rgba(255,255,255,0.03)" },
+  sprint: { title: "Sprint", color: "hsl(var(--grim-gold))", bg: "rgba(245,158,11,0.07)" },
+  "in-progress": { title: "In Progress", color: "hsl(var(--grim-emerald))", bg: "rgba(16,185,129,0.07)" },
+  review: { title: "Review", color: "hsl(210, 80%, 60%)", bg: "rgba(59,130,246,0.07)" },
+  done: { title: "Done", color: "hsl(var(--grim-emerald-dim))", bg: "rgba(16,185,129,0.04)" },
 };

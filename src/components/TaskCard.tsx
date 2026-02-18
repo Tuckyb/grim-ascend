@@ -1,36 +1,36 @@
 import { Task, TaskPriority } from "@/data/sampleData";
 import { Draggable } from "@hello-pangea/dnd";
-import { Clock, AlertTriangle, Flag, Minus } from "lucide-react";
+import { Clock, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const priorityConfig: Record<TaskPriority, { icon: typeof AlertTriangle; className: string; label: string }> = {
-  critical: { icon: AlertTriangle, className: "text-destructive", label: "Critical" },
-  high: { icon: Flag, className: "text-grim-gold", label: "High" },
-  medium: { icon: Flag, className: "text-primary", label: "Medium" },
-  low: { icon: Minus, className: "text-muted-foreground", label: "Low" },
+const priorityConfig: Record<TaskPriority, { dot: string; label: string; labelClass: string }> = {
+  critical: { dot: "bg-destructive", label: "Critical", labelClass: "text-destructive" },
+  high: { dot: "bg-amber-400", label: "High", labelClass: "text-amber-400" },
+  medium: { dot: "bg-primary", label: "Medium", labelClass: "text-primary" },
+  low: { dot: "bg-muted-foreground", label: "Low", labelClass: "text-muted-foreground" },
 };
 
 const initiativeColors: Record<string, string> = {
-  "Member Automations": "bg-primary/20 text-primary",
-  "Retain Customers": "bg-grim-gold/20 text-grim-gold",
-  "THE GRIM Podcast": "bg-purple-500/20 text-purple-400",
-  "Campaign Writing": "bg-blue-500/20 text-blue-400",
-  "GRIM Week": "bg-rose-500/20 text-rose-400",
-  "Affiliate Setup": "bg-orange-500/20 text-orange-400",
-  "New Features": "bg-cyan-500/20 text-cyan-400",
-  Videos: "bg-pink-500/20 text-pink-400",
-  "Bug Fixes": "bg-destructive/20 text-destructive",
-  General: "bg-muted text-muted-foreground",
+  "Member Automations": "text-primary",
+  "Retain Customers": "text-amber-400",
+  "THE GRIM Podcast": "text-purple-400",
+  "Campaign Writing": "text-blue-400",
+  "GRIM Week": "text-rose-400",
+  "Affiliate Setup": "text-orange-400",
+  "New Features": "text-cyan-400",
+  Videos: "text-pink-400",
+  "Bug Fixes": "text-destructive",
+  General: "text-muted-foreground",
 };
 
 interface TaskCardProps {
   task: Task;
   index: number;
+  onDelete: (id: string) => void;
 }
 
-export function TaskCard({ task, index }: TaskCardProps) {
+export function TaskCard({ task, index, onDelete }: TaskCardProps) {
   const priority = priorityConfig[task.priority];
-  const PriorityIcon = priority.icon;
 
   return (
     <Draggable draggableId={task.id} index={index}>
@@ -40,22 +40,36 @@ export function TaskCard({ task, index }: TaskCardProps) {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           className={cn(
-            "grim-card p-3 mb-2 cursor-grab active:cursor-grabbing animate-slide-in",
-            snapshot.isDragging && "grim-glow rotate-1 opacity-90"
+            // Lighter, airier card — transparent bg, just a border
+            "group relative mb-2 px-4 py-3 rounded-2xl border border-border/60 bg-card/40",
+            "cursor-grab active:cursor-grabbing transition-all duration-150",
+            "hover:border-border hover:bg-card/70",
+            snapshot.isDragging && "shadow-lg rotate-1 opacity-90 border-primary/30 bg-card"
           )}
         >
-          {/* Priority & Estimate */}
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1.5">
-              <PriorityIcon className={cn("w-3 h-3", priority.className)} />
-              <span className={cn("text-[10px] font-medium uppercase tracking-wider", priority.className)}>
-                {priority.label}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 text-muted-foreground">
+          {/* Delete button — hover reveal */}
+          <button
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(task.id);
+            }}
+            className="absolute top-2.5 right-2.5 w-5 h-5 rounded-lg bg-secondary text-muted-foreground hover:bg-destructive/20 hover:text-destructive flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-150 z-10"
+            title="Delete task"
+          >
+            <X className="w-3 h-3" />
+          </button>
+
+          {/* Priority dot + label */}
+          <div className="flex items-center gap-2 mb-2 pr-6">
+            <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", priority.dot)} />
+            <span className={cn("text-[11px] font-medium", priority.labelClass)}>
+              {priority.label}
+            </span>
+            <span className="ml-auto flex items-center gap-1 text-muted-foreground">
               <Clock className="w-3 h-3" />
-              <span className="text-[10px] font-mono">{task.estimate}</span>
-            </div>
+              <span className="text-[11px] font-mono">{task.estimate}</span>
+            </span>
           </div>
 
           {/* Title */}
@@ -63,25 +77,10 @@ export function TaskCard({ task, index }: TaskCardProps) {
             {task.title}
           </h4>
 
-          {/* Initiative Tag */}
-          <div className="flex flex-wrap gap-1">
-            <span
-              className={cn(
-                "text-[10px] px-2 py-0.5 rounded-full font-medium",
-                initiativeColors[task.initiative] || initiativeColors.General
-              )}
-            >
-              {task.initiative}
-            </span>
-            {task.tags?.slice(0, 2).map((tag) => (
-              <span
-                key={tag}
-                className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+          {/* Initiative */}
+          <p className={cn("text-[11px]", initiativeColors[task.initiative] || "text-muted-foreground")}>
+            {task.initiative}
+          </p>
         </div>
       )}
     </Draggable>

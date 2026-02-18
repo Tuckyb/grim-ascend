@@ -5,10 +5,7 @@ import {
   Kanban,
   Calendar,
   Target,
-  Rocket,
-  Upload,
   MessageSquare,
-  Settings,
   ChevronLeft,
   Skull,
 } from "lucide-react";
@@ -19,8 +16,6 @@ const navItems = [
   { icon: Kanban, label: "Board", path: "/board" },
   { icon: Calendar, label: "Daily Plan", path: "/daily" },
   { icon: Target, label: "Goals", path: "/goals" },
-  { icon: Rocket, label: "Initiatives", path: "/initiatives" },
-  { icon: Upload, label: "Import", path: "/import" },
   { icon: MessageSquare, label: "Chat", path: "/chat" },
 ];
 
@@ -37,16 +32,16 @@ export function AppSidebar() {
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 h-16 border-b border-sidebar-border">
-        <div className="w-8 h-8 rounded-md grim-gradient flex items-center justify-center flex-shrink-0">
-          <Skull className="w-4 h-4 text-primary-foreground" />
+      <div className="flex items-center gap-3 px-4 h-20 border-b border-sidebar-border">
+        <div className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0">
+          <Skull className="w-5 h-5 text-foreground" />
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
-            <h1 className="font-mono font-bold text-sm text-foreground tracking-wider">
+            <h1 className="font-bold text-base text-foreground tracking-wide">
               THE GRIM
             </h1>
-            <p className="text-[10px] text-muted-foreground tracking-widest uppercase">
+            <p className="text-[11px] text-muted-foreground tracking-wide mt-0.5">
               Honor will come
             </p>
           </div>
@@ -62,31 +57,24 @@ export function AppSidebar() {
               key={item.path}
               onClick={() => navigate(item.path)}
               className={cn(
-                "w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-all duration-150",
+                "w-full flex items-center gap-3 px-3 py-3.5 rounded-xl text-[15px] transition-all duration-150",
                 isActive
-                  ? "bg-primary/10 text-primary"
+                  ? "bg-primary/12 text-primary font-medium"
                   : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )}
             >
-              <item.icon className="w-4 h-4 flex-shrink-0" />
+              <item.icon className="w-5 h-5 flex-shrink-0" />
               {!collapsed && <span>{item.label}</span>}
             </button>
           );
         })}
       </nav>
 
-      {/* Settings & Collapse */}
-      <div className="px-2 pb-4 space-y-1">
-        <button
-          onClick={() => navigate("/settings")}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
-        >
-          <Settings className="w-4 h-4 flex-shrink-0" />
-          {!collapsed && <span>Settings</span>}
-        </button>
+      {/* Collapse */}
+      <div className="px-2 pb-4">
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
         >
           <ChevronLeft
             className={cn(

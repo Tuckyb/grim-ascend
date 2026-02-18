@@ -1,170 +1,166 @@
+import { useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
-import { initialTasks, goals, dailySchedule } from "@/data/sampleData";
-import {
-  Kanban,
-  Target,
-  Zap,
-  TrendingUp,
-  CheckCircle2,
-  Clock,
-  AlertTriangle,
-  Flame,
-} from "lucide-react";
+import { useApp } from "@/context/AppContext";
+import { Target, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
+// ─── Mini Monthly Calendar ────────────────────────────────────────────────────
+function MiniCalendar() {
+  const today = new Date();
+  const [viewDate, setViewDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  const monthName = viewDate.toLocaleDateString("en-AU", { month: "long", year: "numeric" });
+
+  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Pad to start on Monday (shift Sunday to end)
+  const startPad = (firstDay + 6) % 7; // Mon=0
+
+  const cells: (number | null)[] = [
+    ...Array(startPad).fill(null),
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+  ];
+
+  const isToday = (d: number) =>
+    d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+
+  return (
+    <div>
+      {/* Month nav */}
+      <div className="flex items-center justify-between mb-4">
+        <button
+          onClick={() => setViewDate(new Date(year, month - 1, 1))}
+          className="w-7 h-7 rounded-lg bg-secondary hover:bg-muted flex items-center justify-center transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+        </button>
+        <span className="text-sm font-semibold text-foreground">{monthName}</span>
+        <button
+          onClick={() => setViewDate(new Date(year, month + 1, 1))}
+          className="w-7 h-7 rounded-lg bg-secondary hover:bg-muted flex items-center justify-center transition-colors"
+        >
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </button>
+      </div>
+
+      {/* Day labels */}
+      <div className="grid grid-cols-7 mb-1">
+        {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => (
+          <div key={d} className="text-center text-[10px] text-muted-foreground font-medium py-1">
+            {d}
+          </div>
+        ))}
+      </div>
+
+      {/* Days */}
+      <div className="grid grid-cols-7 gap-y-1">
+        {cells.map((day, i) => (
+          <div key={i} className="flex items-center justify-center">
+            {day !== null ? (
+              <span
+                className={cn(
+                  "w-7 h-7 rounded-full flex items-center justify-center text-xs transition-colors",
+                  isToday(day)
+                    ? "bg-foreground text-background font-bold" // Black/White style
+                    : "text-foreground hover:bg-secondary cursor-pointer"
+                )}
+              >
+                {day}
+              </span>
+            ) : null}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Dashboard ────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const { goals } = useApp();
 
-  const totalTasks = initialTasks.length;
-  const doneTasks = initialTasks.filter((t) => t.column === "done").length;
-  const inProgress = initialTasks.filter((t) => t.column === "in-progress").length;
-  const sprintTasks = initialTasks.filter((t) => t.column === "sprint").length;
-  const criticalTasks = initialTasks.filter((t) => t.priority === "critical").length;
-
-  const today = ["Mon", "Tue", "Wed", "Thu", "Fri"][new Date().getDay() - 1] || "Mon";
-  const todayBlocks = dailySchedule[today] || [];
-  const deepWorkBlocks = todayBlocks.filter((b) => b.type === "deep-work").length;
-
-  const avgGoalProgress = Math.round(
-    goals.reduce((sum, g) => sum + g.progress, 0) / goals.length
-  );
-
-  const stats = [
-    { label: "Sprint Tasks", value: sprintTasks, icon: Kanban, color: "text-grim-gold" },
-    { label: "In Progress", value: inProgress, icon: Zap, color: "text-primary" },
-    { label: "Completed", value: doneTasks, icon: CheckCircle2, color: "text-primary" },
-    { label: "Critical", value: criticalTasks, icon: AlertTriangle, color: "text-destructive" },
-  ];
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "morning" : hour < 17 ? "afternoon" : "evening";
 
   return (
     <AppLayout>
       <div className="p-6">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground">
-            Good {new Date().getHours() < 12 ? "morning" : "afternoon"}, Jack.
-          </h1>
-          <p className="text-muted-foreground mt-1 font-mono text-sm">
-            <span className="grim-gradient-text font-semibold">GRIM.</span> Honor will come.
+
+        {/* ── Hero ─────────────────────────────────────────────────────── */}
+        <div className="mb-12">
+          <p className="text-sm text-muted-foreground mb-2 font-mono tracking-wide">
+            {new Date().toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })}
           </p>
-        </div>
+          <h1 className="text-5xl font-bold text-foreground leading-tight mb-8">
+            Good {greeting}, Thomas.
+          </h1>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
-          {stats.map(({ label, value, icon: Icon, color }) => (
-            <div key={label} className="grim-card p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-muted-foreground uppercase tracking-wider">{label}</span>
-                <Icon className={cn("w-4 h-4", color)} />
-              </div>
-              <p className="text-2xl font-bold font-mono text-foreground">{value}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-3 gap-6">
-          {/* Today's Schedule */}
-          <div className="col-span-1">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-primary" />
-                <h2 className="text-lg font-semibold text-foreground">Today</h2>
-              </div>
-              <button
-                onClick={() => navigate("/daily")}
-                className="text-xs text-primary hover:underline"
-              >
-                View all
-              </button>
-            </div>
-            <div className="space-y-1.5">
-              {todayBlocks.slice(0, 6).map((block, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "grim-card p-3 flex items-center gap-3",
-                    block.type === "deep-work" && "border-primary/20"
-                  )}
-                >
-                  <span className="text-xs font-mono text-muted-foreground w-10">{block.time}</span>
-                  <span className="text-sm text-foreground">{block.activity}</span>
-                  {block.type === "deep-work" && <Flame className="w-3 h-3 text-primary ml-auto" />}
-                </div>
-              ))}
-            </div>
+          {/* Slogan */}
+          <div className="py-6">
+            <p className="text-5xl font-bold text-foreground tracking-tight leading-tight">
+              Grim. <br /> Honor will come.
+            </p>
+            <p className="text-lg text-muted-foreground mt-4 max-w-2xl leading-relaxed">
+              Every rep counts. Every hour matters. Show up.
+            </p>
           </div>
+        </div>
 
-          {/* Goal Progress */}
-          <div className="col-span-1">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Target className="w-4 h-4 text-primary" />
-                <h2 className="text-lg font-semibold text-foreground">Goals</h2>
+        {/* ── Content ──────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-3 gap-12">
+
+          {/* Left: Goals Only (No "Needs Attention") */}
+          <div className="col-span-2">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <Target className="w-6 h-6 text-foreground" />
+                <h2 className="text-2xl font-bold text-foreground">Goals</h2>
               </div>
               <button
                 onClick={() => navigate("/goals")}
-                className="text-xs text-primary hover:underline"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
-                View all
+                Manage all →
               </button>
             </div>
-            <div className="grim-card p-4 mb-4">
-              <div className="text-center mb-3">
-                <p className="text-3xl font-bold font-mono grim-gradient-text">{avgGoalProgress}%</p>
-                <p className="text-xs text-muted-foreground mt-1">Average Progress</p>
+
+            {goals.length === 0 ? (
+              <div className="p-8 border border-dashed border-border rounded-2xl text-center">
+                <p className="text-lg text-muted-foreground">No goals set yet.</p>
+                <button
+                  onClick={() => navigate("/goals")}
+                  className="mt-2 text-foreground underline font-medium"
+                >
+                  Set a goal
+                </button>
               </div>
-              <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full grim-gradient transition-all duration-700"
-                  style={{ width: `${avgGoalProgress}%` }}
-                />
+            ) : (
+              <div className="space-y-6">
+                {goals.slice(0, 6).map((goal) => (
+                  <div key={goal.id} className="py-4 border-b border-border/50 last:border-0">
+                    <p className="text-xl font-bold text-foreground leading-tight">{goal.title}</p>
+                    {goal.reason && (
+                      <p className="text-base text-muted-foreground mt-1.5 leading-relaxed">{goal.reason}</p>
+                    )}
+                    <span className="text-xs text-muted-foreground/60 uppercase tracking-widest mt-2 block font-semibold">
+                      {goal.horizon}
+                    </span>
+                  </div>
+                ))}
               </div>
-            </div>
-            <div className="space-y-2">
-              {goals.slice(0, 4).map((goal) => (
-                <div key={goal.id} className="grim-card p-3">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs text-foreground truncate pr-2">{goal.title}</span>
-                    <span className="text-xs font-mono text-primary">{goal.progress}%</span>
-                  </div>
-                  <div className="w-full h-1 bg-secondary rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full grim-gradient"
-                      style={{ width: `${goal.progress}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+            )}
           </div>
 
-          {/* Execution Metrics */}
+          {/* Right: Calendar */}
           <div className="col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-4 h-4 text-primary" />
-              <h2 className="text-lg font-semibold text-foreground">Metrics</h2>
-            </div>
-            <div className="space-y-3">
-              <div className="grim-card p-4">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Sprint Velocity</p>
-                <p className="text-2xl font-bold font-mono text-foreground">
-                  {doneTasks}/{totalTasks}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">tasks completed this sprint</p>
-              </div>
-              <div className="grim-card p-4">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Deep Work Today</p>
-                <p className="text-2xl font-bold font-mono text-primary">{deepWorkBlocks}h</p>
-                <p className="text-xs text-muted-foreground mt-1">focused blocks scheduled</p>
-              </div>
-              <div className="grim-card p-4">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Completion Rate</p>
-                <p className="text-2xl font-bold font-mono text-foreground">
-                  {totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0}%
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">of all tasks done</p>
-              </div>
+            <h2 className="text-lg font-bold text-foreground mb-4">Calendar</h2>
+            <div className="rounded-2xl border border-border/50 p-6 bg-card/30">
+              <MiniCalendar />
             </div>
           </div>
         </div>

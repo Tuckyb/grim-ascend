@@ -43,7 +43,7 @@ export default function ChatPage() {
     <AppLayout>
       <div className="p-6 flex flex-col h-[calc(100vh-0px)]">
         <div className="mb-4">
-          <h1 className="text-2xl font-bold text-foreground">GRIM AI</h1>
+          <h1 className="text-4xl font-bold text-foreground">GRIM AI</h1>
           <p className="text-sm text-muted-foreground font-mono mt-1">
             Your execution strategist · Powered by AI
           </p>
