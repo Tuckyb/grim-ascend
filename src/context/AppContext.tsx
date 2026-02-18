@@ -24,8 +24,8 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | null>(null);
 
-let taskCounter = initialTasks.length + 1;
-let goalCounter = initialGoals.length + 1;
+let taskCounter = Math.max(...initialTasks.map(t => parseInt(t.id.replace('t', '')) || 0)) + 1;
+let goalCounter = Math.max(...initialGoals.map(g => parseInt(g.id.replace('g', '')) || 0)) + 1;
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
     const [tasks, setTasks] = useState<Task[]>(initialTasks);
