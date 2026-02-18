@@ -41,7 +41,7 @@ export function TaskCard({ task, index, onDelete }: TaskCardProps) {
           {...provided.dragHandleProps}
           className={cn(
             // Lighter, airier card — transparent bg, just a border
-            "group relative mb-2 px-4 py-3 rounded-2xl border border-border/60 bg-card/40",
+            "group relative mb-3 px-5 py-4 rounded-2xl border border-border/60 bg-card/40",
             "cursor-grab active:cursor-grabbing transition-all duration-150",
             "hover:border-border hover:bg-card/70",
             snapshot.isDragging && "shadow-lg rotate-1 opacity-90 border-primary/30 bg-card"
@@ -61,24 +61,24 @@ export function TaskCard({ task, index, onDelete }: TaskCardProps) {
           </button>
 
           {/* Priority dot + label */}
-          <div className="flex items-center gap-2 mb-2 pr-6">
-            <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", priority.dot)} />
-            <span className={cn("text-[11px] font-medium", priority.labelClass)}>
+          <div className="flex items-center gap-2 mb-3 pr-6">
+            <span className={cn("w-2 h-2 rounded-full flex-shrink-0", priority.dot)} />
+            <span className={cn("text-xs font-medium", priority.labelClass)}>
               {priority.label}
             </span>
             <span className="ml-auto flex items-center gap-1 text-muted-foreground">
-              <Clock className="w-3 h-3" />
-              <span className="text-[11px] font-mono">{task.estimate}</span>
+              <Clock className="w-3.5 h-3.5" />
+              <span className="text-xs font-mono">{task.estimate}</span>
             </span>
           </div>
 
           {/* Title */}
-          <h4 className="text-sm font-medium text-foreground leading-snug mb-2">
+          <h4 className="text-base font-semibold text-foreground leading-snug mb-2.5">
             {task.title}
           </h4>
 
           {/* Initiative */}
-          <p className={cn("text-[11px]", initiativeColors[task.initiative] || "text-muted-foreground")}>
+          <p className={cn("text-xs font-medium", initiativeColors[task.initiative] || "text-muted-foreground")}>
             {task.initiative}
           </p>
         </div>
