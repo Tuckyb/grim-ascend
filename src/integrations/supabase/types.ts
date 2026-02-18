@@ -14,7 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      goals: {
+        Row: {
+          category: string
+          created_at: string
+          horizon: string
+          id: string
+          progress: number
+          reason: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          horizon: string
+          id?: string
+          progress?: number
+          reason?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          horizon?: string
+          id?: string
+          progress?: number
+          reason?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          category: string
+          column_name: string
+          created_at: string
+          description: string | null
+          due_date: string | null
+          estimate: string
+          id: string
+          initiative: string
+          priority: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          column_name?: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimate?: string
+          id?: string
+          initiative?: string
+          priority?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          column_name?: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimate?: string
+          id?: string
+          initiative?: string
+          priority?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
