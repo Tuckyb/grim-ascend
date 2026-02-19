@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { useApp } from "@/context/AppContext";
-import { Target, ChevronLeft, ChevronRight } from "lucide-react";
+import { Target, ChevronLeft, ChevronRight, Pencil, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 
 // ─── Mini Monthly Calendar ────────────────────────────────────────────────────
 function MiniCalendar() {
@@ -83,9 +85,29 @@ function MiniCalendar() {
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { goals } = useApp();
+  const { user } = useAuth();
+  const { displayName, saveName } = useProfile(user?.id ?? null);
+
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "morning" : hour < 17 ? "afternoon" : "evening";
+  const shownName = displayName || "there";
+
+  const startEdit = () => {
+    setNameDraft(displayName || "");
+    setEditingName(true);
+    setTimeout(() => nameInputRef.current?.focus(), 50);
+  };
+
+  const confirmEdit = async () => {
+    await saveName(nameDraft);
+    setEditingName(false);
+  };
+
+  const cancelEdit = () => setEditingName(false);
 
   return (
     <AppLayout>
@@ -96,8 +118,31 @@ export default function DashboardPage() {
           <p className="text-sm text-muted-foreground mb-2 font-mono tracking-wide">
             {new Date().toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })}
           </p>
-          <h1 className="text-5xl font-bold text-foreground leading-tight mb-3">
-            Good {greeting}, Thomas.
+          <h1 className="text-5xl font-bold text-foreground leading-tight mb-3 flex items-center gap-3 flex-wrap">
+            Good {greeting},{" "}
+            {editingName ? (
+              <span className="flex items-center gap-2">
+                <input
+                  ref={nameInputRef}
+                  value={nameDraft}
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") confirmEdit(); if (e.key === "Escape") cancelEdit(); }}
+                  className="bg-secondary border border-border rounded-xl px-3 py-1 text-4xl font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 w-48"
+                  placeholder="Your name"
+                />
+                <button onClick={confirmEdit} className="p-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+                  <Check className="w-5 h-5" />
+                </button>
+                <button onClick={cancelEdit} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </span>
+            ) : (
+              <span className="flex items-center gap-2 group cursor-pointer" onClick={startEdit}>
+                {shownName}.
+                <Pencil className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-60 transition-opacity" />
+              </span>
+            )}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
             Honor will come. Every rep counts. Every hour matters. Show up.

@@ -3,7 +3,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { dailySchedule, DailyBlock } from "@/data/sampleData";
 import { useApp } from "@/context/AppContext";
 import { cn } from "@/lib/utils";
-import { Clock, Zap, Users, Coffee, Briefcase, Heart, ChevronDown, BookOpen, Moon, X, Flag, Check } from "lucide-react";
+import { Clock, Zap, Users, Coffee, Briefcase, Heart, BookOpen, Moon, X, Flag, Check } from "lucide-react";
 
 // Color-coded icons
 const typeConfig: Record<DailyBlock["type"], { icon: typeof Zap; blockClass: string; label: string }> = {
@@ -16,53 +16,64 @@ const typeConfig: Record<DailyBlock["type"], { icon: typeof Zap; blockClass: str
 
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
-type BlockAssignment = Record<string, string[]>; // key = `${day}-${blockIndex}`, value = task ids array
+type BlockAssignment = Record<string, string[]>;
 type MicroWorkout = Record<string, boolean>;
+type EatNotes = Record<string, string>;
 
 function TimeBlock({
   block,
   blockIndex,
   day,
-  sprintTasks,
+  allBoardTasks,
   assignments,
   onAssign,
   onRemoveAssignment,
   microWorkouts,
   onToggleMicroWorkout,
+  eatNotes,
+  onSaveEatNote,
 }: {
   block: DailyBlock;
   blockIndex: number;
   day: string;
-  sprintTasks: ReturnType<typeof useApp>["tasks"];
+  allBoardTasks: ReturnType<typeof useApp>["tasks"];
   assignments: BlockAssignment;
   onAssign: (key: string, taskId: string) => void;
   onRemoveAssignment: (key: string, taskId: string) => void;
   microWorkouts: MicroWorkout;
   onToggleMicroWorkout: (key: string) => void;
+  eatNotes: EatNotes;
+  onSaveEatNote: (key: string, note: string) => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showAssignMenu, setShowAssignMenu] = useState(false);
+  const [eatDraft, setEatDraft] = useState("");
 
   const config = typeConfig[block.type];
   const Icon = config.icon;
   const isDeepWork = block.type === "deep-work";
   const isMessenger = block.activity === "Messenger";
+  const isEat = block.activity === "Eat";
   const isWorkout = block.type === "personal";
+  const isAdmin = block.type === "admin" && !isMessenger;
   const blockKey = `${day}-${blockIndex}`;
   const assignedTaskIds = assignments[blockKey] || [];
-  const assignedTasks = assignedTaskIds.map(id => sprintTasks.find(t => t.id === id)).filter(Boolean);
+  const assignedTasks = assignedTaskIds.map(id => allBoardTasks.find(t => t.id === id)).filter(Boolean);
   const isMicroDone = microWorkouts[blockKey];
+  const eatNote = eatNotes[blockKey] || "";
 
-  // Only deep-work and admin (except Messenger) blocks are assignable
-  const hasContent = isDeepWork || (block.type === "admin" && !isMessenger);
+  // Deep work and admin (non-messenger) are assignable; Eat is note-able
+  const isAssignable = isDeepWork || isAdmin;
+  const isClickable = isAssignable || isEat;
 
-  const close = () => {
-    setIsExpanded(false);
-    setShowAssignMenu(false);
+  const close = () => setIsExpanded(false);
+
+  // Filter out already-assigned tasks
+  const availableTasks = allBoardTasks.filter(t => !assignedTaskIds.includes(t.id));
+
+  const openExpanded = () => {
+    if (isEat) setEatDraft(eatNote);
+    setIsExpanded(true);
   };
-
-  // Filter out already-assigned tasks from the dropdown
-  const availableTasks = sprintTasks.filter(t => !assignedTaskIds.includes(t.id));
 
   return (
     <>
@@ -87,11 +98,13 @@ function TimeBlock({
           <div
             className={cn(
               "flex-1 p-3 flex flex-col justify-center transition-colors",
-              hasContent && "cursor-pointer hover:bg-white/5"
+              isClickable && "cursor-pointer hover:bg-white/5"
             )}
-            onClick={() => hasContent && setIsExpanded(true)}
+            onClick={() => isClickable && openExpanded()}
           >
-            {assignedTasks.length > 0 ? (
+            {isEat && eatNote ? (
+              <p className="text-base font-medium leading-tight">{eatNote}</p>
+            ) : assignedTasks.length > 0 ? (
               <div className="space-y-1.5">
                 {assignedTasks.map((task) => task && (
                   <div key={task.id}>
@@ -105,14 +118,14 @@ function TimeBlock({
               </div>
             ) : (
               <p className="text-base font-medium opacity-50 italic">
-                {hasContent ? "Click to assign focus..." : block.activity}
+                {isEat ? "Click to add plans..." : isClickable ? "Click to assign focus..." : block.activity}
               </p>
             )}
           </div>
 
-          {/* Right: Micro Workout */}
+          {/* Right: Micro Workout checkboxes */}
           {!isWorkout && (
-            <div className="w-14 flex flex-col items-center justify-center border-l border-current/10 bg-black/5">
+            <div className="w-14 flex flex-col items-center justify-center border-l border-current/10 bg-black/5 gap-1">
               <button
                 onClick={() => onToggleMicroWorkout(blockKey)}
                 className={cn(
@@ -121,7 +134,7 @@ function TimeBlock({
                     ? "bg-current border-transparent text-background"
                     : "border-current/30 hover:border-current/60"
                 )}
-                title="Micro-workout (10 reps)"
+                title="Do Reps"
               >
                 <Check className={cn("w-3.5 h-3.5", !isMicroDone && "opacity-40")} />
               </button>
@@ -130,15 +143,18 @@ function TimeBlock({
         </div>
       </div>
 
-      {/* ── Pop-Out (Detail Modal) ─────────────────────────────────────────── */}
+      {/* ── Pop-Out Modal ─────────────────────────────────────────── */}
       {isExpanded && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={close}
+        >
           <div
-            className="bg-card w-full max-w-xl rounded-3xl shadow-2xl border border-border flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200 overflow-hidden"
+            className="bg-card w-full max-w-2xl rounded-3xl shadow-2xl border border-border flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="p-6 border-b border-border bg-secondary/20 flex items-start justify-between">
+            <div className="p-6 border-b border-border bg-secondary/20 flex items-start justify-between flex-shrink-0">
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="px-3 py-1 rounded-full bg-background border border-border font-mono text-sm font-bold flex items-center gap-2">
@@ -148,8 +164,12 @@ function TimeBlock({
                     {block.activity}
                   </span>
                 </div>
-                <h2 className="text-2xl font-bold leading-tight max-w-md">
-                  {assignedTasks.length > 0 ? `${assignedTasks.length} task${assignedTasks.length > 1 ? 's' : ''} assigned` : "Select Focus Task"}
+                <h2 className="text-2xl font-bold leading-tight">
+                  {isEat
+                    ? "Meal Plans"
+                    : assignedTasks.length > 0
+                      ? `${assignedTasks.length} task${assignedTasks.length > 1 ? 's' : ''} assigned`
+                      : "Select Focus Task"}
                 </h2>
               </div>
               <button onClick={close} className="p-2 rounded-full hover:bg-secondary text-muted-foreground transition-colors">
@@ -157,71 +177,100 @@ function TimeBlock({
               </button>
             </div>
 
-            {/* Selection Body */}
+            {/* Body */}
             <div className="p-6 overflow-y-auto flex-1">
-              {/* Currently assigned tasks */}
-              {assignedTasks.length > 0 && (
-                <div className="mb-6">
-                  <label className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-3 block">
-                    Assigned Tasks
+
+              {/* ── EAT block: free-text note ── */}
+              {isEat && (
+                <div className="flex flex-col gap-3">
+                  <label className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
+                    What are your plans?
                   </label>
-                  <div className="space-y-2">
-                    {assignedTasks.map((task) => task && (
-                      <div key={task.id} className="flex items-center justify-between px-4 py-3 rounded-xl bg-secondary/30 border border-border">
-                        <div>
-                          <span className="text-sm font-medium text-foreground">{task.title}</span>
-                          <span className="text-xs text-muted-foreground ml-2">{task.estimate}</span>
-                        </div>
-                        <button
-                          onClick={() => onRemoveAssignment(blockKey, task.id)}
-                          className="p-1 rounded-lg hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
+                  <textarea
+                    className="w-full rounded-xl bg-secondary/30 border border-border px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
+                    rows={4}
+                    placeholder="e.g. Lunch with James at Nero, 12:30pm..."
+                    value={eatDraft}
+                    onChange={(e) => setEatDraft(e.target.value)}
+                    autoFocus
+                  />
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={close}
+                      className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => { onSaveEatNote(blockKey, eatDraft); close(); }}
+                      className="px-5 py-2 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                    >
+                      Save
+                    </button>
                   </div>
                 </div>
               )}
 
-              {/* Add task dropdown */}
-              <div>
-                <label className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-3 block">
-                  Add Task
-                </label>
-                <div className="relative">
-                  <button
-                    onClick={() => setShowAssignMenu((v) => !v)}
-                    className="w-full flex items-center justify-between px-4 py-4 rounded-xl bg-secondary/30 border border-border text-left hover:bg-secondary/50 transition-colors"
-                  >
-                    <span className="text-base font-medium text-muted-foreground">
-                      Choose a task to add...
-                    </span>
-                    <ChevronDown className="w-5 h-5 text-muted-foreground ml-2" />
-                  </button>
+              {/* ── ASSIGNABLE block: task picker ── */}
+              {isAssignable && (
+                <>
+                  {/* Currently assigned tasks */}
+                  {assignedTasks.length > 0 && (
+                    <div className="mb-6">
+                      <label className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-3 block">
+                        Assigned Tasks
+                      </label>
+                      <div className="space-y-2">
+                        {assignedTasks.map((task) => task && (
+                          <div key={task.id} className="flex items-center justify-between px-4 py-3 rounded-xl bg-secondary/30 border border-border">
+                            <div>
+                              <span className="text-sm font-medium text-foreground">{task.title}</span>
+                              <span className="text-xs text-muted-foreground ml-2">{task.estimate}</span>
+                            </div>
+                            <button
+                              onClick={() => onRemoveAssignment(blockKey, task.id)}
+                              className="p-1 rounded-lg hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                  {showAssignMenu && (
-                    <div className="absolute left-0 right-0 top-full mt-2 bg-popover border border-border rounded-xl shadow-xl z-20 py-2 max-h-60 overflow-y-auto">
+                  {/* Inline task list (no dropdown) */}
+                  <div>
+                    <label className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-3 block">
+                      {availableTasks.length === 0 ? "All tasks assigned" : "Add a Task"}
+                    </label>
+                    <div className="space-y-2 max-h-[50vh] overflow-y-auto pr-1">
                       {availableTasks.length === 0 ? (
-                        <p className="px-4 py-3 text-sm text-muted-foreground italic">No more tasks available.</p>
+                        <p className="text-sm text-muted-foreground italic px-1 py-2">No more tasks available.</p>
                       ) : (
                         availableTasks.map((t) => (
                           <button
                             key={t.id}
-                            onClick={() => { onAssign(blockKey, t.id); setShowAssignMenu(false); }}
-                            className="w-full text-left px-4 py-3 hover:bg-secondary/50 transition-colors flex flex-col gap-0.5"
+                            onClick={() => onAssign(blockKey, t.id)}
+                            className="w-full text-left px-4 py-3.5 rounded-xl bg-secondary/30 hover:bg-secondary/60 border border-border transition-colors flex items-center justify-between gap-3"
                           >
-                            <span className="text-sm font-medium text-foreground">{t.title}</span>
-                            <span className="text-xs text-muted-foreground">
-                              {t.priority} · {t.estimate}
-                            </span>
+                            <div className="flex flex-col gap-0.5 min-w-0">
+                              <span className="text-sm font-semibold text-foreground leading-snug">{t.title}</span>
+                              <span className="text-xs text-muted-foreground">
+                                <span className={cn("font-semibold capitalize mr-1.5", t.priority === "critical" ? "text-destructive" : "text-primary")}>{t.priority}</span>
+                                · {t.estimate} · {t.initiative}
+                              </span>
+                            </div>
+                            <div className="flex-shrink-0 w-6 h-6 rounded-full border-2 border-border flex items-center justify-center">
+                              <span className="text-xs text-muted-foreground font-bold">+</span>
+                            </div>
                           </button>
                         ))
                       )}
                     </div>
-                  )}
-                </div>
-              </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -235,8 +284,10 @@ export default function DailyPlanPage() {
   const todayName = days[new Date().getDay() - 1] || "Mon";
   const [assignments, setAssignments] = useState<BlockAssignment>({});
   const [microWorkouts, setMicroWorkouts] = useState<MicroWorkout>({});
+  const [eatNotes, setEatNotes] = useState<EatNotes>({});
 
-  // All sprint tasks available for assignment to any block
+  // All board tasks (every column) available for assignment
+  const allBoardTasks = tasks.filter(t => t.column !== "done");
   const sprintTasks = tasks.filter((t) => t.column === "sprint");
   const inProgressTasks = tasks.filter((t) => t.column === "in-progress");
 
@@ -258,6 +309,10 @@ export default function DailyPlanPage() {
 
   const handleToggleMicro = (key: string) => {
     setMicroWorkouts((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleSaveEatNote = (key: string, note: string) => {
+    setEatNotes((prev) => ({ ...prev, [key]: note }));
   };
 
   return (
@@ -289,6 +344,14 @@ export default function DailyPlanPage() {
                 </div>
               </div>
 
+              {/* Do Reps Label */}
+              <div className="flex items-center mb-1 pr-0">
+                <div className="flex-1" /> {/* spacer matching left+center width */}
+                <div className="w-14 text-center">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Do Reps</span>
+                </div>
+              </div>
+
               {/* Time Blocks */}
               <div className="flex flex-col gap-3">
                 {blocks.map((block, i) => (
@@ -297,12 +360,14 @@ export default function DailyPlanPage() {
                     block={block}
                     blockIndex={i}
                     day={todayName}
-                    sprintTasks={sprintTasks}
+                    allBoardTasks={allBoardTasks}
                     assignments={assignments}
                     onAssign={handleAssign}
                     onRemoveAssignment={handleRemoveAssignment}
                     microWorkouts={microWorkouts}
                     onToggleMicroWorkout={handleToggleMicro}
+                    eatNotes={eatNotes}
+                    onSaveEatNote={handleSaveEatNote}
                   />
                 ))}
               </div>
