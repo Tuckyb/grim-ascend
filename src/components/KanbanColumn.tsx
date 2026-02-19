@@ -7,9 +7,10 @@ interface KanbanColumnProps {
   columnId: KanbanColumnType;
   tasks: Task[];
   onDelete: (id: string) => void;
+  onEdit: (task: Task) => void;
 }
 
-export function KanbanColumn({ columnId, tasks, onDelete }: KanbanColumnProps) {
+export function KanbanColumn({ columnId, tasks, onDelete, onEdit }: KanbanColumnProps) {
   const config = columnConfig[columnId];
 
   return (
@@ -46,7 +47,7 @@ export function KanbanColumn({ columnId, tasks, onDelete }: KanbanColumnProps) {
             )}
           >
             {tasks.map((task, index) => (
-              <TaskCard key={task.id} task={task} index={index} onDelete={onDelete} />
+              <TaskCard key={task.id} task={task} index={index} onDelete={onDelete} onEdit={onEdit} />
             ))}
             {provided.placeholder}
           </div>
