@@ -75,7 +75,7 @@ export const initialTasks: Task[] = [
 
 export const dailySchedule: Record<string, DailyBlock[]> = {
   Mon: [
-    { time: "08:00", activity: "Plan Day", type: "admin" },
+    { time: "08:00", activity: "Daily Preparation", type: "admin" },
     { time: "09:00", activity: "Deep Work", type: "deep-work" },
     { time: "10:00", activity: "Deep Work", type: "deep-work" },
     { time: "11:00", activity: "Deep Work", type: "deep-work" },
@@ -87,7 +87,7 @@ export const dailySchedule: Record<string, DailyBlock[]> = {
     { time: "17:00", activity: "Messenger", type: "admin" },
   ],
   Tue: [
-    { time: "08:00", activity: "Plan Day", type: "admin" },
+    { time: "08:00", activity: "Daily Preparation", type: "admin" },
     { time: "09:00", activity: "Deep Work", type: "deep-work" },
     { time: "10:00", activity: "Deep Work", type: "deep-work" },
     { time: "11:00", activity: "Deep Work", type: "deep-work" },
@@ -99,7 +99,7 @@ export const dailySchedule: Record<string, DailyBlock[]> = {
     { time: "17:00", activity: "Messenger", type: "admin" },
   ],
   Wed: [
-    { time: "08:00", activity: "Plan Day", type: "admin" },
+    { time: "08:00", activity: "Daily Preparation", type: "admin" },
     { time: "09:00", activity: "Deep Work", type: "deep-work" },
     { time: "10:00", activity: "Deep Work", type: "deep-work" },
     { time: "11:00", activity: "Deep Work", type: "deep-work" },
@@ -111,7 +111,7 @@ export const dailySchedule: Record<string, DailyBlock[]> = {
     { time: "17:00", activity: "Messenger", type: "admin" },
   ],
   Thu: [
-    { time: "08:00", activity: "Plan Day", type: "admin" },
+    { time: "08:00", activity: "Daily Preparation", type: "admin" },
     { time: "09:00", activity: "Deep Work", type: "deep-work" },
     { time: "10:00", activity: "Deep Work", type: "deep-work" },
     { time: "11:00", activity: "Deep Work", type: "deep-work" },
@@ -123,7 +123,7 @@ export const dailySchedule: Record<string, DailyBlock[]> = {
     { time: "17:00", activity: "Messenger", type: "admin" },
   ],
   Fri: [
-    { time: "08:00", activity: "Plan Day", type: "admin" },
+    { time: "08:00", activity: "Daily Preparation", type: "admin" },
     { time: "09:00", activity: "Deep Work", type: "deep-work" },
     { time: "10:00", activity: "Deep Work", type: "deep-work" },
     { time: "11:00", activity: "Deep Work", type: "deep-work" },
