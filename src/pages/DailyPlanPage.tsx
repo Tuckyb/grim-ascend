@@ -20,6 +20,7 @@ type BlockAssignment = Record<string, string[]>;
 type MicroWorkout = Record<string, boolean>;
 type EatNotes = Record<string, string>;
 
+
 function TimeBlock({
   block,
   blockIndex,
@@ -125,7 +126,7 @@ function TimeBlock({
 
           {/* Right: Micro Workout checkboxes */}
           {!isWorkout && (
-            <div className="w-14 flex flex-col items-center justify-center border-l border-current/10 bg-black/5 gap-1">
+          <div className="w-14 flex flex-col items-center justify-center border-l border-current/10 bg-black/5 gap-1">
               <button
                 onClick={() => onToggleMicroWorkout(blockKey)}
                 className={cn(
@@ -136,7 +137,7 @@ function TimeBlock({
                 )}
                 title="Do Reps"
               >
-                <Check className={cn("w-3.5 h-3.5", !isMicroDone && "opacity-40")} />
+                {isMicroDone && <Check className="w-3.5 h-3.5" />}
               </button>
             </div>
           )}
@@ -280,11 +281,8 @@ function TimeBlock({
 }
 
 export default function DailyPlanPage() {
-  const { tasks } = useApp();
+  const { tasks, assignments, setAssignments, microWorkouts, setMicroWorkouts, eatNotes, setEatNotes } = useApp();
   const todayName = days[new Date().getDay() - 1] || "Mon";
-  const [assignments, setAssignments] = useState<BlockAssignment>({});
-  const [microWorkouts, setMicroWorkouts] = useState<MicroWorkout>({});
-  const [eatNotes, setEatNotes] = useState<EatNotes>({});
 
   // All board tasks (every column) available for assignment
   const allBoardTasks = tasks.filter(t => t.column !== "done");

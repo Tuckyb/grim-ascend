@@ -11,6 +11,10 @@ import {
     TaskInitiative,
 } from "@/data/sampleData";
 
+type BlockAssignment = Record<string, string[]>;
+type MicroWorkout = Record<string, boolean>;
+type EatNotes = Record<string, string>;
+
 interface AppContextType {
     tasks: Task[];
     goals: Goal[];
@@ -23,6 +27,13 @@ interface AppContextType {
     deleteGoal: (id: string) => void;
     updateGoalProgress: (id: string, progress: number) => void;
     loading: boolean;
+    // Daily planner persistent state
+    assignments: BlockAssignment;
+    setAssignments: React.Dispatch<React.SetStateAction<BlockAssignment>>;
+    microWorkouts: MicroWorkout;
+    setMicroWorkouts: React.Dispatch<React.SetStateAction<MicroWorkout>>;
+    eatNotes: EatNotes;
+    setEatNotes: React.Dispatch<React.SetStateAction<EatNotes>>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -32,6 +43,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const [goals, setGoals] = useState<Goal[]>([]);
     const [userId, setUserId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [assignments, setAssignments] = useState<BlockAssignment>({});
+    const [microWorkouts, setMicroWorkouts] = useState<MicroWorkout>({});
+    const [eatNotes, setEatNotes] = useState<EatNotes>({});
 
     // Get user ID
     useEffect(() => {
@@ -201,6 +215,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 deleteGoal,
                 updateGoalProgress,
                 loading,
+                assignments,
+                setAssignments,
+                microWorkouts,
+                setMicroWorkouts,
+                eatNotes,
+                setEatNotes,
             }}
         >
             {children}
