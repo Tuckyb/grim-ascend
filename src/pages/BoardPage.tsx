@@ -9,8 +9,11 @@ import { cn } from "@/lib/utils";
 
 const columns: KanbanColumnType[] = ["backlog", "sprint", "in-progress", "review", "done"];
 const priorities: TaskPriority[] = ["critical", "high", "medium", "low"];
+const initiatives: TaskInitiative[] = [
+  "Member Automations", "Retain Customers", "THE GRIM Podcast", "Campaign Writing",
+  "GRIM Week", "Affiliate Setup", "New Features", "Videos", "Bug Fixes", "General",
+];
 
-// Daily planner slots that tasks can be dropped into
 const plannerSlots = [
   "Morning Deep Work (6–9am)",
   "Mid-Morning Deep Work (9–12pm)",
@@ -31,12 +34,35 @@ const defaultForm = {
 };
 
 export default function BoardPage() {
-  const { tasks, setTasks, addTask, deleteTask } = useApp();
+  const { tasks, setTasks, addTask, deleteTask, updateTask } = useApp();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPriority, setFilterPriority] = useState<TaskPriority | "all">("all");
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [form, setForm] = useState(defaultForm);
+
+  // Edit modal state
+  const [editTask, setEditTask] = useState<Task | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Task>>({});
+
+  const openEdit = (task: Task) => {
+    setEditTask(task);
+    setEditForm({ ...task });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editTask || !editForm.title?.trim()) return;
+    await updateTask(editTask.id, {
+      title: editForm.title,
+      priority: editForm.priority,
+      column: editForm.column,
+      estimate: editForm.estimate,
+      initiative: editForm.initiative,
+      category: editForm.category,
+      description: editForm.description,
+    });
+    setEditTask(null);
+  };
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -150,6 +176,7 @@ export default function BoardPage() {
                 columnId={col}
                 tasks={filteredTasks.filter((t) => t.column === col)}
                 onDelete={deleteTask}
+                onEdit={openEdit}
               />
             ))}
           </div>
@@ -218,7 +245,6 @@ export default function BoardPage() {
                 />
               </div>
 
-              {/* Daily Execution slot */}
               <div>
                 <label className="text-sm text-muted-foreground mb-2 block">
                   Add to Daily Execution
@@ -255,6 +281,119 @@ export default function BoardPage() {
           </div>
         </div>
       )}
+
+      {/* Edit Task Modal */}
+      {editTask && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={() => setEditTask(null)}
+        >
+          <div
+            className="bg-card border border-border rounded-2xl p-7 w-full max-w-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-foreground">Edit Task</h2>
+              <button onClick={() => setEditTask(null)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-5">
+              <div>
+                <label className="text-sm text-muted-foreground mb-2 block">Task title</label>
+                <input
+                  autoFocus
+                  type="text"
+                  value={editForm.title ?? ""}
+                  onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))}
+                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-muted-foreground mb-2 block">Description <span className="opacity-60 text-xs">(optional)</span></label>
+                <textarea
+                  value={editForm.description ?? ""}
+                  onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
+                  rows={2}
+                  placeholder="Add more detail..."
+                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-muted-foreground mb-2 block">Priority</label>
+                  <select
+                    value={editForm.priority ?? "medium"}
+                    onChange={(e) => setEditForm((f) => ({ ...f, priority: e.target.value as TaskPriority }))}
+                    className="w-full bg-secondary border border-border rounded-xl px-3 py-3 text-base text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    {priorities.map((p) => (
+                      <option key={p} value={p} className="capitalize">{p}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground mb-2 block">Column</label>
+                  <select
+                    value={editForm.column ?? "backlog"}
+                    onChange={(e) => setEditForm((f) => ({ ...f, column: e.target.value as KanbanColumnType }))}
+                    className="w-full bg-secondary border border-border rounded-xl px-3 py-3 text-base text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    {columns.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-muted-foreground mb-2 block">Estimate</label>
+                  <input
+                    type="text"
+                    value={editForm.estimate ?? ""}
+                    onChange={(e) => setEditForm((f) => ({ ...f, estimate: e.target.value }))}
+                    placeholder="e.g. 1 hour"
+                    className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground mb-2 block">Initiative</label>
+                  <select
+                    value={editForm.initiative ?? "General"}
+                    onChange={(e) => setEditForm((f) => ({ ...f, initiative: e.target.value as TaskInitiative }))}
+                    className="w-full bg-secondary border border-border rounded-xl px-3 py-3 text-base text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    {initiatives.map((i) => (
+                      <option key={i} value={i}>{i}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-7">
+              <button
+                onClick={() => setEditTask(null)}
+                className="flex-1 px-4 py-3 rounded-xl bg-secondary text-secondary-foreground text-base hover:bg-muted transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveEdit}
+                disabled={!editForm.title?.trim()}
+                className="flex-1 px-4 py-3 rounded-xl grim-gradient text-primary-foreground text-base font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppLayout>
   );
 }
+

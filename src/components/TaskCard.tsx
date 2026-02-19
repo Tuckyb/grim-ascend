@@ -27,9 +27,10 @@ interface TaskCardProps {
   task: Task;
   index: number;
   onDelete: (id: string) => void;
+  onEdit: (task: Task) => void;
 }
 
-export function TaskCard({ task, index, onDelete }: TaskCardProps) {
+export function TaskCard({ task, index, onDelete, onEdit }: TaskCardProps) {
   const priority = priorityConfig[task.priority];
 
   return (
@@ -39,8 +40,8 @@ export function TaskCard({ task, index, onDelete }: TaskCardProps) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          onDoubleClick={() => onEdit(task)}
           className={cn(
-            // Lighter, airier card — transparent bg, just a border
             "group relative mb-3 px-5 py-4 rounded-2xl border border-border/60 bg-card/40",
             "cursor-grab active:cursor-grabbing transition-all duration-150",
             "hover:border-border hover:bg-card/70",
@@ -81,6 +82,11 @@ export function TaskCard({ task, index, onDelete }: TaskCardProps) {
           <p className={cn("text-xs font-medium", initiativeColors[task.initiative] || "text-muted-foreground")}>
             {task.initiative}
           </p>
+
+          {/* Double-click hint */}
+          <span className="absolute bottom-2 right-3 text-[10px] text-muted-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity select-none">
+            double-click to edit
+          </span>
         </div>
       )}
     </Draggable>

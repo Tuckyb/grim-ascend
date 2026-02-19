@@ -17,6 +17,7 @@ interface AppContextType {
     addTask: (task: Omit<Task, "id">) => void;
     deleteTask: (id: string) => void;
     moveTask: (id: string, column: KanbanColumn) => void;
+    updateTask: (id: string, updates: Partial<Omit<Task, "id">>) => void;
     setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
     addGoal: (goal: Omit<Goal, "id">) => void;
     deleteGoal: (id: string) => void;
@@ -134,6 +135,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         await supabase.from("tasks").update({ column_name: column }).eq("id", id);
     }, []);
 
+    const updateTask = useCallback(async (id: string, updates: Partial<Omit<Task, "id">>) => {
+        setTasks((prev) =>
+            prev.map((t) => (t.id === id ? { ...t, ...updates } : t))
+        );
+        await supabase.from("tasks").update({
+            title: updates.title,
+            description: updates.description ?? null,
+            priority: updates.priority,
+            category: updates.category,
+            initiative: updates.initiative,
+            estimate: updates.estimate,
+            column_name: updates.column,
+            due_date: updates.dueDate ?? null,
+            tags: updates.tags ?? null,
+        }).eq("id", id);
+    }, []);
+
     const addGoal = useCallback(async (goal: Omit<Goal, "id">) => {
         if (!userId) return;
         const { data, error } = await supabase.from("goals").insert({
@@ -177,6 +195,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 addTask,
                 deleteTask,
                 moveTask,
+                updateTask,
                 setTasks,
                 addGoal,
                 deleteGoal,
