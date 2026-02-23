@@ -117,6 +117,8 @@ function TimeBlock({
                   </div>
                 ))}
               </div>
+            ) : assignedTaskIds.length > 0 ? (
+              <p className="text-base font-medium opacity-60 italic">Loading assigned tasks…</p>
             ) : (
               <p className="text-base font-medium opacity-50 italic">
                 {isEat ? "Click to add plans..." : isClickable ? "Click to assign focus..." : block.activity}

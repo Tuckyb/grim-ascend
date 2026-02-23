@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
     initialTasks,
@@ -46,13 +46,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const [assignments, setAssignments] = useState<BlockAssignment>({});
     const [microWorkouts, setMicroWorkouts] = useState<MicroWorkout>({});
     const [eatNotes, setEatNotes] = useState<EatNotes>({});
+    const prevUserIdRef = useRef<string | null>(null);
 
     // Get user ID
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
             setUserId(session?.user?.id ?? null);
         });
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            // Only update userId on real auth changes, not token refreshes
+            if (event === 'TOKEN_REFRESHED') return;
             setUserId(session?.user?.id ?? null);
         });
         return () => subscription.unsubscribe();
@@ -61,11 +64,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // Load data when user is available
     useEffect(() => {
         if (!userId) {
-            setTasks([]);
-            setGoals([]);
+            // Only clear data on actual sign-out (prev was set, now null)
+            if (prevUserIdRef.current !== null) {
+                setTasks([]);
+                setGoals([]);
+            }
+            prevUserIdRef.current = null;
             setLoading(false);
             return;
         }
+
+        // Skip reload if userId hasn't actually changed
+        if (prevUserIdRef.current === userId) {
+            return;
+        }
+        prevUserIdRef.current = userId;
 
         const loadData = async () => {
             setLoading(true);
