@@ -73,67 +73,37 @@ export const initialTasks: Task[] = [
   { id: "t19", title: "Launch member survey", priority: "medium", category: "professional", initiative: "Retain Customers", estimate: "30 min", column: "done", tags: ["survey"] },
 ];
 
+// Template of activities (time offsets from start hour)
+export const dailyBlockTemplate: { offsetHours: number; activity: string; type: DailyBlock["type"] }[] = [
+  { offsetHours: 0, activity: "Daily Preparation", type: "admin" },
+  { offsetHours: 1, activity: "Deep Work", type: "deep-work" },
+  { offsetHours: 2, activity: "Deep Work", type: "deep-work" },
+  { offsetHours: 3, activity: "Deep Work", type: "deep-work" },
+  { offsetHours: 4, activity: "Eat", type: "break" },
+  { offsetHours: 5, activity: "To Do List", type: "admin" },
+  { offsetHours: 6, activity: "Meetings", type: "meeting" },
+  { offsetHours: 7, activity: "Workout", type: "personal" },
+  { offsetHours: 8, activity: "Eat", type: "break" },
+  { offsetHours: 9, activity: "Messenger", type: "admin" },
+];
+
+export const DEFAULT_START_HOUR = 8;
+
+export function generateDailyBlocks(startHour: number): DailyBlock[] {
+  return dailyBlockTemplate.map((t) => {
+    const hour = (startHour + t.offsetHours) % 24;
+    const time = `${hour.toString().padStart(2, "0")}:00`;
+    return { time, activity: t.activity, type: t.type };
+  });
+}
+
+// Legacy export for backwards compat
 export const dailySchedule: Record<string, DailyBlock[]> = {
-  Mon: [
-    { time: "08:00", activity: "Daily Preparation", type: "admin" },
-    { time: "09:00", activity: "Deep Work", type: "deep-work" },
-    { time: "10:00", activity: "Deep Work", type: "deep-work" },
-    { time: "11:00", activity: "Deep Work", type: "deep-work" },
-    { time: "12:00", activity: "Eat", type: "break" },
-    { time: "13:00", activity: "To Do List", type: "admin" },
-    { time: "14:00", activity: "Meetings", type: "meeting" },
-    { time: "15:00", activity: "Workout", type: "personal" },
-    { time: "16:00", activity: "Eat", type: "break" },
-    { time: "17:00", activity: "Messenger", type: "admin" },
-  ],
-  Tue: [
-    { time: "08:00", activity: "Daily Preparation", type: "admin" },
-    { time: "09:00", activity: "Deep Work", type: "deep-work" },
-    { time: "10:00", activity: "Deep Work", type: "deep-work" },
-    { time: "11:00", activity: "Deep Work", type: "deep-work" },
-    { time: "12:00", activity: "Eat", type: "break" },
-    { time: "13:00", activity: "To Do List", type: "admin" },
-    { time: "14:00", activity: "Meetings", type: "meeting" },
-    { time: "15:00", activity: "Workout", type: "personal" },
-    { time: "16:00", activity: "Eat", type: "break" },
-    { time: "17:00", activity: "Messenger", type: "admin" },
-  ],
-  Wed: [
-    { time: "08:00", activity: "Daily Preparation", type: "admin" },
-    { time: "09:00", activity: "Deep Work", type: "deep-work" },
-    { time: "10:00", activity: "Deep Work", type: "deep-work" },
-    { time: "11:00", activity: "Deep Work", type: "deep-work" },
-    { time: "12:00", activity: "Eat", type: "break" },
-    { time: "13:00", activity: "To Do List", type: "admin" },
-    { time: "14:00", activity: "Meetings", type: "meeting" },
-    { time: "15:00", activity: "Workout", type: "personal" },
-    { time: "16:00", activity: "Eat", type: "break" },
-    { time: "17:00", activity: "Messenger", type: "admin" },
-  ],
-  Thu: [
-    { time: "08:00", activity: "Daily Preparation", type: "admin" },
-    { time: "09:00", activity: "Deep Work", type: "deep-work" },
-    { time: "10:00", activity: "Deep Work", type: "deep-work" },
-    { time: "11:00", activity: "Deep Work", type: "deep-work" },
-    { time: "12:00", activity: "Eat", type: "break" },
-    { time: "13:00", activity: "To Do List", type: "admin" },
-    { time: "14:00", activity: "Meetings", type: "meeting" },
-    { time: "15:00", activity: "Workout", type: "personal" },
-    { time: "16:00", activity: "Eat", type: "break" },
-    { time: "17:00", activity: "Messenger", type: "admin" },
-  ],
-  Fri: [
-    { time: "08:00", activity: "Daily Preparation", type: "admin" },
-    { time: "09:00", activity: "Deep Work", type: "deep-work" },
-    { time: "10:00", activity: "Deep Work", type: "deep-work" },
-    { time: "11:00", activity: "Deep Work", type: "deep-work" },
-    { time: "12:00", activity: "Eat", type: "break" },
-    { time: "13:00", activity: "To Do List", type: "admin" },
-    { time: "14:00", activity: "Meetings", type: "meeting" },
-    { time: "15:00", activity: "Workout", type: "personal" },
-    { time: "16:00", activity: "Eat", type: "break" },
-    { time: "17:00", activity: "Messenger", type: "admin" },
-  ],
+  Mon: generateDailyBlocks(DEFAULT_START_HOUR),
+  Tue: generateDailyBlocks(DEFAULT_START_HOUR),
+  Wed: generateDailyBlocks(DEFAULT_START_HOUR),
+  Thu: generateDailyBlocks(DEFAULT_START_HOUR),
+  Fri: generateDailyBlocks(DEFAULT_START_HOUR),
 };
 
 export const goals: Goal[] = [
