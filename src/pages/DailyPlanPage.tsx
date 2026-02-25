@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
-import { dailySchedule, DailyBlock } from "@/data/sampleData";
+import { generateDailyBlocks, DEFAULT_START_HOUR, DailyBlock } from "@/data/sampleData";
 import { useApp } from "@/context/AppContext";
 import { cn } from "@/lib/utils";
-import { Clock, Zap, Users, Coffee, Briefcase, Heart, BookOpen, Moon, X, Flag, Check } from "lucide-react";
+import { Clock, Zap, Users, Coffee, Briefcase, Heart, BookOpen, Moon, X, Flag, Check, ChevronUp, ChevronDown, RotateCcw } from "lucide-react";
 
 // Color-coded icons
 const typeConfig: Record<DailyBlock["type"], { icon: typeof Zap; blockClass: string; label: string }> = {
@@ -285,13 +285,21 @@ function TimeBlock({
 export default function DailyPlanPage() {
   const { tasks, assignments, setAssignments, microWorkouts, setMicroWorkouts, eatNotes, setEatNotes } = useApp();
   const todayName = days[new Date().getDay() - 1] || "Mon";
+  const [startHour, setStartHour] = useState(DEFAULT_START_HOUR);
 
   // All board tasks (every column) available for assignment
   const allBoardTasks = tasks.filter(t => t.column !== "done");
   const sprintTasks = tasks.filter((t) => t.column === "sprint");
   const inProgressTasks = tasks.filter((t) => t.column === "in-progress");
 
-  const blocks = dailySchedule[todayName] || [];
+  const blocks = generateDailyBlocks(startHour);
+
+  const formatHour = (h: number) => {
+    const wrapped = ((h % 24) + 24) % 24;
+    const ampm = wrapped >= 12 ? "PM" : "AM";
+    const display = wrapped === 0 ? 12 : wrapped > 12 ? wrapped - 12 : wrapped;
+    return `${display}:00 ${ampm}`;
+  };
 
   const handleAssign = (key: string, taskId: string) => {
     setAssignments((prev) => ({
@@ -318,11 +326,42 @@ export default function DailyPlanPage() {
   return (
     <AppLayout>
       <div className="p-8 h-screen overflow-hidden flex flex-col">
-        <div className="mb-8 flex-shrink-0">
-          <h1 className="text-5xl font-bold mb-2">Today's Protocol</h1>
-          <p className="text-xl text-muted-foreground font-medium">
-            {todayName} · Execute with Honor.
-          </p>
+        <div className="mb-8 flex-shrink-0 flex items-start justify-between">
+          <div>
+            <h1 className="text-5xl font-bold mb-2">Today's Protocol</h1>
+            <p className="text-xl text-muted-foreground font-medium">
+              {todayName} · Execute with Honor.
+            </p>
+          </div>
+
+          {/* Start Time Control */}
+          <div className="flex items-center gap-3 bg-secondary/30 border border-border rounded-2xl px-4 py-3">
+            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Start</span>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setStartHour((h) => ((h - 1) + 24) % 24)}
+                className="p-1 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <ChevronDown className="w-4 h-4" />
+              </button>
+              <span className="font-mono text-sm font-bold w-20 text-center">{formatHour(startHour)}</span>
+              <button
+                onClick={() => setStartHour((h) => (h + 1) % 24)}
+                className="p-1 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <ChevronUp className="w-4 h-4" />
+              </button>
+            </div>
+            {startHour !== DEFAULT_START_HOUR && (
+              <button
+                onClick={() => setStartHour(DEFAULT_START_HOUR)}
+                className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                title="Reset to default (8:00 AM)"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* ── Split Layout ─────────────────────────────────────────────────── */}
