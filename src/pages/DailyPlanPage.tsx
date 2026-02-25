@@ -337,21 +337,15 @@ export default function DailyPlanPage() {
           {/* Start Time Control */}
           <div className="flex items-center gap-3 bg-secondary/30 border border-border rounded-2xl px-4 py-3">
             <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Start</span>
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setStartHour((h) => ((h - 1) + 24) % 24)}
-                className="p-1 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ChevronDown className="w-4 h-4" />
-              </button>
-              <span className="font-mono text-sm font-bold w-20 text-center">{formatHour(startHour)}</span>
-              <button
-                onClick={() => setStartHour((h) => (h + 1) % 24)}
-                className="p-1 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ChevronUp className="w-4 h-4" />
-              </button>
-            </div>
+            <select
+              value={startHour}
+              onChange={(e) => setStartHour(Number(e.target.value))}
+              className="bg-background border border-border rounded-xl px-3 py-1.5 font-mono text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
+            >
+              {Array.from({ length: 24 }, (_, i) => (
+                <option key={i} value={i}>{formatHour(i)}</option>
+              ))}
+            </select>
             {startHour !== DEFAULT_START_HOUR && (
               <button
                 onClick={() => setStartHour(DEFAULT_START_HOUR)}
