@@ -80,17 +80,17 @@ function TimeBlock({
     <>
       {/* ── Compact Block ───────────────────────────────────────────────────── */}
       <div className={cn(
-        "relative w-full rounded-2xl border transition-all duration-200 overflow-hidden",
+        "time-block w-full",
         config.blockClass
       )}>
-        <div className="flex h-full min-h-[100px]">
+        <div className="flex h-full min-h-[100px] pl-1">
           {/* Left: Time & Type */}
-          <div className="w-24 flex flex-col justify-between p-3 border-r border-current/10 bg-black/10">
-            <div className="flex items-center gap-1.5 opacity-80">
-              <Icon className="w-4 h-4" />
-              <span className="font-mono text-sm font-bold">{block.time}</span>
+          <div className="w-24 flex flex-col justify-between p-3 border-r border-border">
+            <div className="flex items-center gap-1.5">
+              <Icon className="w-4 h-4 tb-icon" />
+              <span className="font-mono text-sm font-bold text-foreground">{block.time}</span>
             </div>
-            <span className="text-xs font-bold uppercase tracking-wider opacity-60">
+            <span className="tb-label text-xs font-bold uppercase tracking-wider">
               {config.label}
             </span>
           </div>
@@ -99,18 +99,18 @@ function TimeBlock({
           <div
             className={cn(
               "flex-1 p-3 flex flex-col justify-center transition-colors",
-              isClickable && "cursor-pointer hover:bg-white/5"
+              isClickable && "cursor-pointer hover:bg-white/[0.025]"
             )}
             onClick={() => isClickable && openExpanded()}
           >
             {isEat && eatNote ? (
-              <p className="text-base font-medium leading-tight">{eatNote}</p>
+              <p className="text-base font-medium leading-tight text-foreground">{eatNote}</p>
             ) : assignedTasks.length > 0 ? (
               <div className="space-y-1.5">
                 {assignedTasks.map((task) => task && (
                   <div key={task.id}>
-                    <p className="text-base font-bold leading-tight line-clamp-1">{task.title}</p>
-                    <div className="flex items-center gap-2 opacity-70">
+                    <p className="text-base font-bold text-foreground leading-tight line-clamp-1">{task.title}</p>
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <span className={cn("w-1.5 h-1.5 rounded-full", task.priority === 'critical' ? 'bg-destructive' : 'bg-primary')} />
                       <span className="text-xs font-medium uppercase">{task.initiative}</span>
                     </div>
@@ -118,24 +118,22 @@ function TimeBlock({
                 ))}
               </div>
             ) : assignedTaskIds.length > 0 ? (
-              <p className="text-base font-medium opacity-60 italic">Loading assigned tasks…</p>
+              <p className="text-base font-medium text-muted-foreground italic">Loading assigned tasks…</p>
             ) : (
-              <p className="text-base font-medium opacity-50 italic">
+              <p className="text-base font-medium text-muted-foreground italic">
                 {isEat ? "Click to add plans..." : isClickable ? "Click to assign focus..." : block.activity}
               </p>
             )}
           </div>
 
-          {/* Right: Micro Workout checkboxes */}
+          {/* Right: Micro Workout checkbox */}
           {!isWorkout && (
-          <div className="w-14 flex flex-col items-center justify-center border-l border-current/10 bg-black/5 gap-1">
+            <div className="w-14 flex flex-col items-center justify-center border-l border-border gap-1">
               <button
                 onClick={() => onToggleMicroWorkout(blockKey)}
                 className={cn(
-                  "w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all",
-                  isMicroDone
-                    ? "bg-current border-transparent text-background"
-                    : "border-current/30 hover:border-current/60"
+                  "tb-check w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all",
+                  isMicroDone && "is-done"
                 )}
                 title="Do Reps"
               >

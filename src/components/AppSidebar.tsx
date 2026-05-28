@@ -9,9 +9,11 @@ import {
   ChevronLeft,
   Skull,
   LogOut,
+  Type,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { useSerifHeadings } from "@/hooks/useSerifHeadings";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
@@ -23,6 +25,7 @@ const navItems = [
 
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [serif, setSerif] = useSerifHeadings();
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut } = useAuth();
@@ -75,6 +78,19 @@ export function AppSidebar() {
 
       {/* Sign Out */}
       <div className="px-2 pb-2">
+        <button
+          onClick={() => setSerif(!serif)}
+          className={cn(
+            "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-colors",
+            serif
+              ? "bg-primary/10 text-primary"
+              : "text-sidebar-foreground hover:bg-sidebar-accent"
+          )}
+          title={serif ? "Switch to sans headings" : "Switch to serif headings"}
+        >
+          <Type className="w-4 h-4 flex-shrink-0" />
+          {!collapsed && <span>{serif ? "Serif headings" : "Sans headings"}</span>}
+        </button>
         <button
           onClick={signOut}
           className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm text-destructive/70 hover:bg-destructive/10 hover:text-destructive transition-colors"

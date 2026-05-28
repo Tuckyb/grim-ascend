@@ -2,54 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+/* GRIM Ascend — readability pass
+ * Higher-contrast warm dark, ADHD-friendly type, priority-tinted utilities.
+ * Atkinson Hyperlegible body (designed for legibility), Newsreader for serif headings tweak.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&display=swap');
 
 @layer base {
   :root {
-    /* Backgrounds — deep warm charcoal, pure black essentially */
-    --background: 0 0% 5%;
-    --foreground: 40 20% 94%;
-    /* CREAMY OFF-WHITE */
+    /* ── Backgrounds — warm dark, distinct elevations ────────────── */
+    --background: 30 10% 5%;          /* #0F0E0C — page */
+    --foreground: 40 30% 88%;         /* #EDE6D5 — primary cream, brighter */
 
-    --card: 0 0% 8%;
-    --card-foreground: 40 20% 94%;
+    --card: 35 12% 9%;                /* #1A1814 — clearly lifted off page */
+    --card-foreground: 40 30% 88%;
 
-    --popover: 0 0% 8%;
-    --popover-foreground: 40 20% 94%;
+    --popover: 32 14% 11%;
+    --popover-foreground: 40 30% 88%;
 
-    /* Primary — Muted Sage Green RESTORED */
-    --primary: 150 28% 42%;
-    --primary-foreground: 0 0% 5%;
+    /* ── Primary — Sage, pushed slightly brighter ────────────────── */
+    --primary: 145 22% 53%;           /* #6FA286 */
+    --primary-foreground: 30 10% 5%;
 
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 40 10% 80%;
+    --secondary: 32 10% 13%;          /* #211E18 — card-hi */
+    --secondary-foreground: 35 14% 78%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 40 5% 60%;
+    --muted: 30 8% 15%;
+    --muted-foreground: 35 14% 67%;   /* #B8AFA0 — secondary text, MUCH more readable */
 
-    --accent: 150 28% 42%;
-    --accent-foreground: 0 0% 5%;
+    --accent: 145 22% 53%;
+    --accent-foreground: 30 10% 5%;
 
-    --destructive: 0 60% 48%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 8 58% 60%;         /* #D46A5A — warm crimson */
+    --destructive-foreground: 30 10% 5%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 150 28% 42%;
+    /* ── Borders / inputs — visible but quiet ────────────────────── */
+    --border: 30 8% 16%;              /* #2D2A26 */
+    --input: 30 8% 16%;
+    --ring: 145 22% 53%;
 
-    /* Apple-style: generous border radius */
     --radius: 0.875rem;
 
-    /* GRIM custom tokens */
-    --grim-sage: 150 28% 42%;
-    --grim-amber: 38 52% 50%;
-    --grim-cream: 40 20% 94%;
-    /* Explicit cream token */
+    /* ── Custom GRIM tokens (used across pages) ──────────────────── */
+    --grim-sage: 145 22% 53%;
+    --grim-amber: 35 60% 56%;         /* #D49A4A — readable amber */
+    --grim-crimson: 8 58% 60%;
+    --grim-sky: 207 39% 64%;
+    --grim-rose: 340 38% 63%;
+    --grim-cream: 40 30% 88%;
+    --grim-text-dim: 35 14% 67%;
+    --grim-text-mute: 32 7% 45%;
+    --grim-line-hi: 30 8% 21%;
+    --grim-card-hi: 32 10% 13%;
+
+    /* Backwards-compat names already referenced in repo */
+    --grim-emerald: 145 22% 53%;
+    --grim-emerald-dim: 145 22% 38%;
+    --grim-gold: 35 60% 56%;
+    --grim-surface: 32 10% 13%;
+    --grim-surface-hover: 32 10% 16%;
+
+    /* Sidebar (used by existing components) */
+    --sidebar-background: 30 11% 7%;
+    --sidebar-foreground: 35 14% 78%;
+    --sidebar-primary: 145 22% 53%;
+    --sidebar-primary-foreground: 30 10% 5%;
+    --sidebar-accent: 32 10% 13%;
+    --sidebar-accent-foreground: 40 30% 88%;
+    --sidebar-border: 30 8% 16%;
+    --sidebar-ring: 145 22% 53%;
   }
 
   .dark {
-    --background: 0 0% 5%;
-    --foreground: 40 20% 94%;
+    --background: 30 10% 5%;
+    --foreground: 40 30% 88%;
   }
 }
 
@@ -60,35 +86,43 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 16px;
-    line-height: 1.7;
+    font-family: 'Atkinson Hyperlegible', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.55;
     letter-spacing: 0;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: 'Inter', system-ui, sans-serif;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Atkinson Hyperlegible', system-ui, sans-serif;
     letter-spacing: -0.01em;
-    line-height: 1.25;
-    color: hsl(38 22% 84%);
+    line-height: 1.15;
+    color: hsl(var(--foreground));
+    font-weight: 700;
   }
 
   .font-mono {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
   }
+
+  /* ── Serif headings tweak (toggled by .serif-headings on body) ── */
+  body.serif-headings h1,
+  body.serif-headings h2,
+  body.serif-headings h3 {
+    font-family: 'Newsreader', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.018em;
+  }
+  /* Serifs read smaller optically — bump up to compensate */
+  body.serif-headings h1 { font-size: 1.15em; }
 }
 
 @layer utilities {
   .grim-gradient {
-    background: linear-gradient(135deg, hsl(var(--grim-sage)), hsl(160 35% 30%));
+    background: linear-gradient(135deg, hsl(var(--grim-sage)), hsl(145 26% 38%));
   }
 
-  /* Restored gradient text for variety, but can be plain if needed. Let's keep it subtle sage. */
   .grim-gradient-text {
     background: linear-gradient(135deg, hsl(var(--grim-sage)), hsl(var(--grim-amber)));
     -webkit-background-clip: text;
@@ -99,45 +133,63 @@
   .grim-card {
     @apply bg-card border border-border rounded-2xl transition-all duration-200;
   }
-
   .grim-card:hover {
-    border-color: hsl(var(--grim-sage) / 0.3);
+    border-color: hsl(var(--grim-line-hi));
   }
 
-  /* Time block strips for daily planner - COLOR CODED RESTORED */
+  /* ── Time block — colored LEFT RAIL ONLY (no tinted backgrounds) ─
+   * Body remains card-coloured so cream text reads cleanly.
+   * Each variant exposes --tb-accent so children (.tb-icon, .tb-label,
+   * .tb-check) can pick up the type colour without hard-coding. */
   .time-block {
-    @apply rounded-xl border transition-all duration-200;
-    min-height: 88px;
+    @apply rounded-2xl border border-border bg-card transition-all duration-200;
+    min-height: 96px;
+    position: relative;
+    overflow: hidden;
+    --tb-accent: hsl(var(--grim-line-hi));
+  }
+  .time-block::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--tb-accent);
+  }
+  .time-block .tb-icon,
+  .time-block .tb-label { color: var(--tb-accent); }
+
+  .time-block-deep-work { --tb-accent: hsl(var(--grim-sage)); }
+  .time-block-meeting   { --tb-accent: hsl(var(--grim-sky)); }
+  .time-block-break     { --tb-accent: hsl(var(--grim-amber)); }
+  .time-block-admin     { --tb-accent: hsl(var(--grim-text-dim)); }
+  .time-block-personal  { --tb-accent: hsl(var(--grim-rose)); }
+
+  /* Reps checkbox inside a time-block: outlined → fills with type colour when done */
+  .tb-check {
+    border-color: hsl(var(--grim-line-hi));
+    color: hsl(var(--background));
+    background: transparent;
+  }
+  .tb-check.is-done {
+    background: var(--tb-accent);
+    border-color: var(--tb-accent);
   }
 
-  .time-block-deep-work {
-    background: hsl(150 28% 42% / 0.1);
-    border-color: hsl(150 28% 42% / 0.25);
-    color: hsl(150 35% 60%);
-    /* Brighter sage text */
+  /* ── Task card — subtle priority tint + colored left border ───── */
+  .task-card-critical {
+    background: hsl(8 58% 60% / 0.07);
+    border-left: 3px solid hsl(var(--grim-crimson));
   }
-
-  .time-block-meeting {
-    background: hsl(210 60% 50% / 0.1);
-    border-color: hsl(210 60% 50% / 0.25);
-    color: hsl(210 70% 70%);
+  .task-card-high {
+    background: hsl(35 60% 56% / 0.06);
+    border-left: 3px solid hsl(var(--grim-amber));
   }
-
-  .time-block-break {
-    background: hsl(38 52% 50% / 0.1);
-    border-color: hsl(38 52% 50% / 0.25);
-    color: hsl(38 60% 60%);
+  .task-card-medium {
+    background: hsl(145 22% 53% / 0.06);
+    border-left: 3px solid hsl(var(--grim-sage));
   }
-
-  .time-block-admin {
-    background: hsl(0 0% 20% / 0.4);
-    border-color: hsl(0 0% 30%);
-    color: hsl(0 0% 70%);
-  }
-
-  .time-block-personal {
-    background: hsl(340 60% 55% / 0.1);
-    border-color: hsl(340 60% 55% / 0.25);
-    color: hsl(340 70% 70%);
+  .task-card-low {
+    background: hsl(var(--grim-card-hi));
+    border-left: 3px solid hsl(var(--grim-line-hi));
   }
 }
