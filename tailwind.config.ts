@@ -14,8 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Atkinson Hyperlegible', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
+        serif: ['Newsreader', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -68,6 +69,16 @@ export default {
           surface: "hsl(var(--grim-surface))",
           "surface-hover": "hsl(var(--grim-surface-hover))",
           "text-dim": "hsl(var(--grim-text-dim))",
+          // ── Readability palette additions ──
+          sage: "hsl(var(--grim-sage))",
+          amber: "hsl(var(--grim-amber))",
+          crimson: "hsl(var(--grim-crimson))",
+          sky: "hsl(var(--grim-sky))",
+          rose: "hsl(var(--grim-rose))",
+          cream: "hsl(var(--grim-cream))",
+          "text-mute": "hsl(var(--grim-text-mute))",
+          "line-hi": "hsl(var(--grim-line-hi))",
+          "card-hi": "hsl(var(--grim-card-hi))",
         },
       },
       borderRadius: {

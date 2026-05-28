@@ -3,23 +3,43 @@ import { Draggable } from "@hello-pangea/dnd";
 import { Clock, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const priorityConfig: Record<TaskPriority, { dot: string; label: string; labelClass: string }> = {
-  critical: { dot: "bg-destructive", label: "Critical", labelClass: "text-destructive" },
-  high: { dot: "bg-amber-400", label: "High", labelClass: "text-amber-400" },
-  medium: { dot: "bg-primary", label: "Medium", labelClass: "text-primary" },
-  low: { dot: "bg-muted-foreground", label: "Low", labelClass: "text-muted-foreground" },
+const priorityConfig: Record<TaskPriority, { dot: string; label: string; labelClass: string; cardClass: string }> = {
+  critical: {
+    dot: "bg-grim-crimson",
+    label: "Critical",
+    labelClass: "text-grim-crimson",
+    cardClass: "task-card-critical",
+  },
+  high: {
+    dot: "bg-grim-amber",
+    label: "High",
+    labelClass: "text-grim-amber",
+    cardClass: "task-card-high",
+  },
+  medium: {
+    dot: "bg-primary",
+    label: "Medium",
+    labelClass: "text-primary",
+    cardClass: "task-card-medium",
+  },
+  low: {
+    dot: "bg-muted-foreground",
+    label: "Low",
+    labelClass: "text-muted-foreground",
+    cardClass: "task-card-low",
+  },
 };
 
 const initiativeColors: Record<string, string> = {
   "Member Automations": "text-primary",
-  "Retain Customers": "text-amber-400",
-  "THE GRIM Podcast": "text-purple-400",
-  "Campaign Writing": "text-blue-400",
-  "GRIM Week": "text-rose-400",
-  "Affiliate Setup": "text-orange-400",
-  "New Features": "text-cyan-400",
-  Videos: "text-pink-400",
-  "Bug Fixes": "text-destructive",
+  "Retain Customers": "text-grim-amber",
+  "THE GRIM Podcast": "text-grim-rose",
+  "Campaign Writing": "text-grim-sky",
+  "GRIM Week": "text-grim-rose",
+  "Affiliate Setup": "text-grim-amber",
+  "New Features": "text-grim-sky",
+  Videos: "text-grim-rose",
+  "Bug Fixes": "text-grim-crimson",
   General: "text-muted-foreground",
 };
 
@@ -42,10 +62,12 @@ export function TaskCard({ task, index, onDelete, onEdit }: TaskCardProps) {
           {...provided.dragHandleProps}
           onDoubleClick={() => onEdit(task)}
           className={cn(
-            "group relative mb-3 px-5 py-4 rounded-2xl border border-border/60 bg-card/40",
+            // Priority tint + colored left rail comes from .task-card-* utility
+            priority.cardClass,
+            "group relative mb-3 px-5 py-4 rounded-xl border border-border/70",
             "cursor-grab active:cursor-grabbing transition-all duration-150",
-            "hover:border-border hover:bg-card/70",
-            snapshot.isDragging && "shadow-lg rotate-1 opacity-90 border-primary/30 bg-card"
+            "hover:border-border",
+            snapshot.isDragging && "shadow-lg rotate-1 opacity-90 border-primary/40"
           )}
         >
           {/* Delete button — hover reveal */}
@@ -64,7 +86,7 @@ export function TaskCard({ task, index, onDelete, onEdit }: TaskCardProps) {
           {/* Priority dot + label */}
           <div className="flex items-center gap-2 mb-3 pr-6">
             <span className={cn("w-2 h-2 rounded-full flex-shrink-0", priority.dot)} />
-            <span className={cn("text-xs font-medium", priority.labelClass)}>
+            <span className={cn("text-xs font-bold uppercase tracking-wider", priority.labelClass)}>
               {priority.label}
             </span>
             <span className="ml-auto flex items-center gap-1 text-muted-foreground">
@@ -74,7 +96,7 @@ export function TaskCard({ task, index, onDelete, onEdit }: TaskCardProps) {
           </div>
 
           {/* Title */}
-          <h4 className="text-base font-semibold text-foreground leading-snug mb-2.5">
+          <h4 className="text-base font-bold text-foreground leading-snug mb-2.5">
             {task.title}
           </h4>
 
