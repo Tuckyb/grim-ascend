@@ -10,6 +10,7 @@ import {
   Skull,
   LogOut,
   Type,
+  Flame,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,6 +21,7 @@ const navItems = [
   { icon: Kanban, label: "Board", path: "/board" },
   { icon: Calendar, label: "Daily Plan", path: "/daily" },
   { icon: Target, label: "Goals", path: "/goals" },
+  { icon: Flame, label: "Goldie Focus", path: "/focus" },
   { icon: MessageSquare, label: "Chat", path: "/chat" },
 ];
 

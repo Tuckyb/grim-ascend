@@ -11,6 +11,7 @@ import DailyPlanPage from "./pages/DailyPlanPage";
 import WeeklyPlanPage from "./pages/WeeklyPlanPage";
 import GoalsPage from "./pages/GoalsPage";
 import ChatPage from "./pages/ChatPage";
+import FocusModePage from "./pages/FocusModePage";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 
@@ -44,6 +45,7 @@ function AppRoutes() {
       <Route path="/weekly" element={<WeeklyPlanPage />} />
       <Route path="/goals" element={<GoalsPage />} />
       <Route path="/chat" element={<ChatPage />} />
+      <Route path="/focus" element={<FocusModePage />} />
       <Route path="/auth" element={<Navigate to="/" replace />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
