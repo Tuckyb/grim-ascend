@@ -157,6 +157,12 @@ export default function FocusModePage() {
           <p className="text-sm text-muted-foreground mt-2">Only pick ONE. Everything else is eliminated, optional or deleted.</p>
         </section>
 
+        <div className="grid md:grid-cols-3 gap-6">
+          <Checklist title="Step 2 · Environment" items={environment} state={checks} toggle={toggle} />
+          <Checklist title="Step 5 · Anti-routine" items={antiRoutine} state={checks} toggle={toggle} />
+          <Checklist title="Step 4 & Evening" items={evening} state={checks} toggle={toggle} />
+        </div>
+
         <div className="grid md:grid-cols-2 gap-6">
           <section className="grim-card p-6 flex flex-col items-center">
             <p className="text-sm uppercase tracking-widest text-primary font-mono mb-2 self-start">Step 3 · Deep work sprint</p>
@@ -203,12 +209,6 @@ export default function FocusModePage() {
               ))}
             </ul>
           </section>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          <Checklist title="Step 2 · Environment" items={environment} state={checks} toggle={toggle} />
-          <Checklist title="Step 5 · Anti-routine" items={antiRoutine} state={checks} toggle={toggle} />
-          <Checklist title="Step 4 & Evening" items={evening} state={checks} toggle={toggle} />
         </div>
 
         <section className="grim-card p-6">
